@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>万佳乐权益大礼包 · 领取演示</title>
+  <style>
+    :root {
+      --jd: #e1251b;
+      --water: #1f8a7a;
+      --brown: #a15c12;
+      --brown-btn: #b8732a;
+      --yellow: #ffe14a;
+      --mint: #e7f4ef;
+      --card-blue: #e7edf8;
+      --brand-blue: #2f5ec8;
+      --text: #1a1a1a;
+      --muted: #8a8a8a;
+      --line: #ececec;
+      --wx-bg: #f5f5f5;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    button { font: inherit; border: 0; background: none; cursor: pointer; color: inherit; }
+    body {
+      min-height: 100vh;
+      font-family: "PingFang SC", "Hiragino Sans GB", "Heiti SC", sans-serif;
+      background: #efe6dc;
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 28px 16px 40px;
+    }
+    .toolbar {
+      width: 390px;
+      max-width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 14px;
+      color: #6b5b4d;
+    }
+    .toolbar h1 { font-size: 15px; font-weight: 600; }
+    .toolbar span, .toolbar button { font-size: 12px; color: #8a7464; }
+    .toolbar button { text-decoration: underline; }
+    .phone {
+      width: 390px;
+      height: 844px;
+      background: #111;
+      border-radius: 42px;
+      padding: 10px;
+      box-shadow: 0 18px 40px rgba(80, 50, 20, .18);
+    }
+    .screen {
+      height: 100%;
+      border-radius: 32px;
+      overflow: hidden;
+      position: relative;
+      background: #fbf7f2;
+    }
+    .page { display: none; height: 100%; flex-direction: column; }
+    .page.on { display: flex; }
+    .toast {
+      position: absolute; left: 50%; top: 46%; transform: translate(-50%, -50%);
+      background: rgba(0,0,0,.72); color: #fff; padding: 10px 16px; border-radius: 8px;
+      font-size: 13px; z-index: 20; display: none; white-space: nowrap;
+    }
+    .toast.on { display: block; }
+    .modal {
+      position: absolute; inset: 0; background: rgba(0,0,0,.35);
+      display: none; align-items: center; justify-content: center; z-index: 15;
+    }
+    .modal.on { display: flex; }
+    .modal-card {
+      width: 240px; background: #fff; border-radius: 16px; padding: 28px 20px 22px; text-align: center;
+    }
+    .ok-dot {
+      width: 48px; height: 48px; margin: 0 auto 12px; border-radius: 50%;
+      background: #27ae60; color: #fff; display: grid; place-items: center; font-size: 22px;
+    }
+    .modal-card b { display: block; font-size: 16px; }
+    .modal-card p { margin-top: 6px; font-size: 12px; color: #888; }
+
+    /* Claim */
+    .claim { background: #fbf7f2; }
+    .status {
+      height: 52px; padding: 14px 22px 0; display: flex; align-items: center; justify-content: space-between;
+      font-size: 15px; font-weight: 600;
+    }
+    .status .clock { width: 64px; }
+    .status .title { flex: 1; text-align: center; }
+    .status .icons { width: 64px; display: flex; justify-content: flex-end; gap: 6px; opacity: .85; }
+    .claim-body { flex: 1; min-height: 0; padding: 8px 18px 18px; display: flex; flex-direction: column; }
+    .pack {
+      flex: 1; min-height: 0; background: var(--mint); border-radius: 22px; padding: 18px 14px 14px;
+      display: flex; flex-direction: column;
+    }
+    .pack h2 { font-size: 22px; font-weight: 700; letter-spacing: .02em; margin: 2px 8px 14px; flex: none; }
+    .pack-list { flex: 1; min-height: 0; overflow: auto; padding-right: 2px; }
+    .perk {
+      display: flex; align-items: stretch; background: var(--card-blue); border-radius: 16px;
+      min-height: 92px; margin-bottom: 10px; overflow: hidden;
+    }
+    .perk:last-child { margin-bottom: 0; }
+    .perk-brand {
+      width: 86px; display: flex; align-items: center; justify-content: center;
+      color: var(--brand-blue); font-size: 15px; font-weight: 600; flex: none;
+    }
+    .perk-split {
+      width: 0; border-left: 1px dashed #c9d3ea; margin: 14px 0;
+    }
+    .perk-copy { flex: 1; padding: 16px 14px; display: flex; flex-direction: column; justify-content: center; }
+    .perk-copy b { font-size: 15px; font-weight: 600; }
+    .perk-copy span { margin-top: 6px; font-size: 12px; color: #9aa3b5; }
+    .claim-btn {
+      margin-top: 12px; height: 48px; border-radius: 24px; background: var(--brown-btn);
+      color: #fff; font-size: 16px; font-weight: 600; flex: none;
+    }
+    .claim-btn:disabled { opacity: .7; }
+
+    /* WeChat pages */
+    .wx { background: var(--wx-bg); }
+    .wx-status {
+      height: 44px; padding: 10px 12px 0 20px; display: flex; align-items: center;
+      font-size: 14px; font-weight: 600; background: #fff;
+    }
+    .wx-status .sig { margin-left: auto; display: flex; gap: 5px; align-items: center; font-size: 11px; font-weight: 500; }
+    .wx-nav {
+      height: 46px; background: #fff; display: flex; align-items: center; padding: 0 8px 0 4px;
+      font-size: 17px; font-weight: 500;
+    }
+    .wx-nav .back { width: 42px; height: 42px; display: grid; place-items: center; font-size: 22px; }
+    .wx-nav .nt { flex: 1; }
+    .capsule {
+      display: flex; align-items: center; border: 1px solid #e6e6e6; border-radius: 16px;
+      height: 32px; overflow: hidden; background: #fff;
+    }
+    .capsule i { width: 36px; height: 32px; display: grid; place-items: center; color: #333; font-style: normal; font-size: 15px; }
+    .capsule .div { width: 1px; height: 16px; background: #e6e6e6; }
+    .tabs {
+      background: #fff; display: flex; justify-content: center; gap: 36px; padding: 4px 0 0;
+      font-size: 16px; color: #333;
+    }
+    .tabs button { padding: 8px 4px 10px; position: relative; }
+    .tabs button.on { font-weight: 600; }
+    .tabs button.on::after {
+      content: ""; position: absolute; left: 50%; bottom: 4px; transform: translateX(-50%);
+      width: 22px; height: 3px; border-radius: 2px; background: #f5c242;
+    }
+    .filters { display: flex; gap: 8px; padding: 12px 12px 4px; }
+    .filters button {
+      height: 30px; padding: 0 14px; border-radius: 15px; background: #fff; font-size: 13px; color: #666;
+    }
+    .filters button.on { background: var(--yellow); color: #333; font-weight: 600; }
+    #rights-cards { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+    #rights-packs { flex: 1; overflow: auto; padding: 12px; }
+    .list { flex: 1; overflow: auto; padding: 8px 12px 16px; }
+    .brand-h { display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; margin: 8px 2px 8px; }
+    .brand-h .mark {
+      width: 22px; height: 22px; border-radius: 6px; color: #fff;
+      display: grid; place-items: center; font-size: 11px; font-weight: 700;
+    }
+    .brand-block { margin-bottom: 14px; }
+    .brand-block .zone-card { margin-bottom: 8px; }
+    .brand-block .zone-card:last-child { margin-bottom: 0; }
+    .zone-card, .pack-card {
+      width: 100%; background: #fff; border-radius: 12px; padding: 16px 14px;
+      display: flex; align-items: center; gap: 12px; text-align: left;
+    }
+    .ticket {
+      width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; flex: none;
+    }
+    .zone-meta { flex: 1; min-width: 0; }
+    .zone-meta b { display: block; font-size: 15px; font-weight: 600; line-height: 1.3; }
+    .zone-meta span { display: block; margin-top: 4px; font-size: 12px; color: #999; }
+    .zone-split { width: 0; height: 46px; border-left: 1px dashed #e8e8e8; }
+    .zone-price { color: var(--jd); font-size: 20px; font-weight: 700; padding-left: 8px; }
+    .empty { text-align: center; color: #bbb; font-size: 13px; padding: 48px 0; }
+    .pack-card { justify-content: space-between; padding: 18px 16px; }
+    .pack-card .left b { font-size: 16px; }
+    .pack-card .left span { display: block; margin-top: 6px; font-size: 12px; color: #999; line-height: 1.5; }
+    .tag-got { font-size: 11px; color: #c4560a; background: #fff3e0; padding: 3px 8px; border-radius: 4px; }
+
+    .zone-tabs {
+      background: #fff; display: flex; padding: 0 8px; border-bottom: 1px solid #f0f0f0;
+    }
+    .zone-tabs button {
+      flex: 1; height: 44px; font-size: 15px; color: #bbb; position: relative;
+    }
+    .zone-tabs button.on { color: #222; font-weight: 600; }
+    .zone-tabs button.on::after {
+      content: ""; position: absolute; left: 50%; bottom: 0; transform: translateX(-50%);
+      width: 28px; height: 3px; background: #f5c242; border-radius: 2px 2px 0 0;
+    }
+    .zone-tools {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 16px 4px; font-size: 13px;
+    }
+    .zone-tools .batch { color: var(--brown); display: flex; align-items: center; gap: 4px; }
+    .zone-tools label { display: flex; align-items: center; gap: 6px; color: #444; font-size: 13px; }
+    .coupon {
+      background: #fff; border-radius: 12px; margin: 10px 12px; padding: 14px 14px 12px; position: relative;
+    }
+    .coupon.is-batch { padding-left: 40px; }
+    .coupon .chk {
+      position: absolute; left: 12px; top: 22px; width: 18px; height: 18px; display: none;
+    }
+    .coupon.is-batch .chk { display: block; }
+    .c-top { display: flex; justify-content: space-between; align-items: flex-start; }
+    .c-top b { font-size: 16px; font-weight: 600; }
+    .c-exp { margin-top: 6px; font-size: 12px; color: #999; }
+    .c-price { color: var(--jd); font-size: 22px; font-weight: 700; }
+    .c-dash { border: none; border-top: 1px dashed #eee; margin: 12px 0 10px; }
+    .c-bot { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #555; }
+    .mini-mark {
+      width: 18px; height: 18px; border-radius: 4px; color: #fff;
+      display: grid; place-items: center; font-size: 10px; font-weight: 700; flex: none;
+    }
+    .got-btn {
+      margin-left: auto; height: 26px; padding: 0 10px; border-radius: 4px;
+      border: 1px solid #7dcea0; color: #27ae60; font-size: 12px; background: #fff;
+    }
+    .got-btn.copied { border-color: #ddd; color: #999; }
+    .foot {
+      padding: 10px 16px 18px; background: linear-gradient(180deg, transparent, var(--wx-bg) 20%);
+    }
+    .foot button {
+      width: 100%; height: 46px; border-radius: 23px; background: #6b3d12; color: #fff;
+      font-size: 16px; font-weight: 600;
+    }
+    .stamp {
+      position: absolute; right: 10px; top: 10px; font-size: 10px; color: #fff;
+      background: #e1251b; border-radius: 4px 4px 4px 0; padding: 2px 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <h1>礼包领取演示</h1>
+    <div>
+      <span>点领取 → 列表 → 京东专区</span>
+      ·
+      <button type="button" id="reset">重置</button>
+    </div>
+  </div>
+  <div class="phone">
+    <div class="screen" id="app">
+      <div class="page claim on" id="page-claim">
+        <div class="status">
+          <span class="clock">9:41</span>
+          <span class="title">领取权益</span>
+          <span class="icons">
+            <svg width="17" height="12" viewBox="0 0 17 12" fill="none"><rect x="0.5" y="1" width="15" height="10" rx="2" stroke="#111"/><rect x="2" y="3" width="10" height="6" rx="1" fill="#111"/></svg>
+          </span>
+        </div>
+        <div class="claim-body">
+          <div class="pack">
+            <h2>万佳乐权益大礼包</h2>
+            <div class="pack-list" id="claim-list"></div>
+            <button class="claim-btn" id="claim-btn" type="button">领取权益</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="page wx" id="page-rights">
+        <div class="wx-status">
+          <span>13:49</span>
+          <span class="sig">▲ &nbsp; ●●●● &nbsp;
+            <svg width="16" height="11" viewBox="0 0 16 11"><rect x="0" y="3" width="3" height="8" fill="#111"/><rect x="4.5" y="1.5" width="3" height="9.5" fill="#111"/><rect x="9" y="0" width="3" height="11" fill="#111"/><rect x="13.2" y="2" width="2.2" height="7" stroke="#111" fill="none"/></svg>
+          </span>
+        </div>
+        <div class="wx-nav">
+          <button class="back" id="back-rights" type="button">‹</button>
+          <div class="nt">我的权益</div>
+          <div class="capsule">
+            <i>☆</i><span class="div"></span><i>···</i><span class="div"></span><i>○</i>
+          </div>
+        </div>
+        <div class="tabs">
+          <button type="button" data-rtab="cards" class="on">我的卡券</button>
+          <button type="button" data-rtab="packs">我的礼包</button>
+        </div>
+        <div id="rights-cards">
+          <div class="filters" id="filters"></div>
+          <div class="list" id="rights-list"></div>
+        </div>
+        <div id="rights-packs" class="list" style="display:none"></div>
+      </div>
+
+      <div class="page wx" id="page-zone">
+        <div class="wx-status">
+          <span>13:50</span>
+          <span class="sig">▲ &nbsp; ●●●● &nbsp;
+            <svg width="16" height="11" viewBox="0 0 16 11"><rect x="0" y="3" width="3" height="8" fill="#111"/><rect x="4.5" y="1.5" width="3" height="9.5" fill="#111"/><rect x="9" y="0" width="3" height="11" fill="#111"/><rect x="13.2" y="2" width="2.2" height="7" stroke="#111" fill="none"/></svg>
+          </span>
+        </div>
+        <div class="wx-nav">
+          <button class="back" id="back-zone" type="button">‹</button>
+          <div class="nt" id="zone-title">京东专区列表</div>
+          <div class="capsule">
+            <i>☆</i><span class="div"></span><i>···</i><span class="div"></span><i>○</i>
+          </div>
+        </div>
+        <div class="zone-tabs" id="zone-tabs"></div>
+        <div class="zone-tools">
+          <button class="batch" id="batch-btn" type="button">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+              <rect x="1" y="2" width="9" height="11" rx="1.5" stroke="currentColor"/>
+              <path d="M4 1h8v10" stroke="currentColor"/>
+            </svg>
+            批量操作
+          </button>
+          <label><input type="checkbox" id="only-uncopied" /> 仅看未复制卡密</label>
+        </div>
+        <div class="list" id="zone-list"></div>
+        <div class="foot">
+          <button type="button" id="copy-all">一键复制全部卡密</button>
+        </div>
+      </div>
+
+      <div class="modal" id="modal">
+        <div class="modal-card">
+          <div class="ok-dot">✓</div>
+          <b>领取成功</b>
+          <p>权益已放入「我的卡券」</p>
+        </div>
+      </div>
+      <div class="toast" id="toast"></div>
+    </div>
+  </div>
+
+<script>
+const KEY = "gift-pack-demo-v3";
+const BRAND_ORDER = ["jd", "eleme", "amap", "meituan"];
+
+const brands = {
+  jd: { id: "jd", name: "京东专区", short: "京东", color: "#e1251b", glyph: "京", kind: "secret", ink: "#fff" },
+  eleme: { id: "eleme", name: "饿了么", short: "饿了么", color: "#1a8cff", glyph: "饿", kind: "perk", ink: "#fff" },
+  amap: { id: "amap", name: "高德", short: "高德", color: "#00b578", glyph: "高", kind: "perk", ink: "#fff" },
+  meituan: { id: "meituan", name: "美团", short: "美团", color: "#ffd100", glyph: "美", kind: "perk", ink: "#222" },
+};
+
+function freshCoupons() {
+  return [
+    { id: "jd-100", brand: "jd", name: "京东专区100元", sub: "购物卡券权益", value: 100, expire: "2026-12-10 00:00:00", no: "JD100-8392-6610", secret: "K8M2-QP17", copied: false },
+    { id: "jd-50", brand: "jd", name: "京东专区50元", sub: "购物卡券权益", value: 50, expire: "2026-12-10 00:00:00", no: "JD050-4412-9081", secret: "N3T9-LE05", copied: false },
+    { id: "eleme-116", brand: "eleme", name: "饿了么116元券包", sub: "满减组合券", value: 116, expire: "2026-12-10 00:00:00", copied: false },
+    { id: "amap-50", brand: "amap", name: "高德打车50元组合券包", sub: "新老用户打车权益", value: 50, expire: "2026-12-10 00:00:00", copied: false },
+    { id: "mt-30", brand: "meituan", name: "美团外卖神券30元", sub: "外卖红包权益", value: 30, expire: "2026-12-10 00:00:00", copied: false },
+  ];
+}
+
+let state = {
+  claimed: false,
+  page: "claim",
+  rightsTab: "cards",
+  filter: "unused",
+  zoneId: "jd",
+  zoneTab: "got",
+  batch: false,
+  selected: {},
+  onlyUncopied: false,
+  coupons: freshCoupons(),
+};
+
+function load() {
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (!raw) return;
+    const saved = JSON.parse(raw);
+    state = { ...state, ...saved, selected: {} };
+  } catch {}
+}
+function save() {
+  localStorage.setItem(KEY, JSON.stringify({
+    claimed: state.claimed,
+    coupons: state.coupons,
+  }));
+}
+
+load();
+
+function show(page) {
+  state.page = page;
+  document.querySelectorAll(".page").forEach((el) => el.classList.remove("on"));
+  document.getElementById("page-" + page).classList.add("on");
+  if (page === "claim") renderClaim();
+  if (page === "rights") renderRights();
+  if (page === "zone") renderZone();
+}
+
+function toast(text) {
+  const el = document.getElementById("toast");
+  el.textContent = text;
+  el.classList.add("on");
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => el.classList.remove("on"), 1400);
+}
+
+function money(n, digits) {
+  return n.toFixed(digits);
+}
+
+function ofBrand(id) {
+  return state.coupons.filter((c) => c.brand === id);
+}
+
+function ticketSvg(color, glyph, ink) {
+  const s = 44;
+  const fill = ink || "#fff";
+  return `<svg width="${s}" height="${s}" viewBox="0 0 44 44" aria-hidden="true">
+    <circle cx="22" cy="22" r="22" fill="#f3f3f3"/>
+    <path fill="${color}" d="M9 16h26a3.2 3.2 0 0 1 3.2 3.2v1.6a3.2 3.2 0 0 0 0 6.4v1.6A3.2 3.2 0 0 1 35 32H9a3.2 3.2 0 0 1-3.2-3.2v-1.6a3.2 3.2 0 0 0 0-6.4v-1.6A3.2 3.2 0 0 1 9 16z"/>
+    <text x="22" y="26.5" text-anchor="middle" font-size="15" font-weight="700" fill="${fill}" font-family="PingFang SC, sans-serif">${glyph}</text>
+  </svg>`;
+}
+
+function renderClaim() {
+  const btn = document.getElementById("claim-btn");
+  btn.textContent = state.claimed ? "查看权益" : "领取权益";
+  document.getElementById("claim-list").innerHTML = state.coupons.map((c) => {
+    const b = brands[c.brand];
+    return `<div class="perk">
+      <div class="perk-brand">${b.short}</div>
+      <div class="perk-split"></div>
+      <div class="perk-copy">
+        <b>${c.name}</b>
+        <span>${c.sub}</span>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function renderRights() {
+  const cards = state.rightsTab === "cards";
+  document.getElementById("rights-cards").style.display = cards ? "flex" : "none";
+  document.getElementById("rights-packs").style.display = cards ? "none" : "block";
+  document.querySelectorAll("[data-rtab]").forEach((b) => b.classList.toggle("on", b.dataset.rtab === state.rightsTab));
+
+  const filters = [
+    ["all", "全部"],
+    ["unused", "未使用"],
+    ["charging", "充值中"],
+    ["used", "已使用"],
+  ];
+  document.getElementById("filters").innerHTML = filters.map(([id, label]) =>
+    `<button type="button" data-filter="${id}" class="${state.filter === id ? "on" : ""}">${label}</button>`
+  ).join("");
+
+  const list = document.getElementById("rights-list");
+  if (state.filter === "charging") {
+    list.innerHTML = `<p class="empty">暂无充值中的卡券</p>`;
+  } else if (state.filter === "used") {
+    list.innerHTML = `<p class="empty">暂无已使用卡券</p>`;
+  } else {
+    list.innerHTML = BRAND_ORDER.map((id) => {
+      const b = brands[id];
+      const items = ofBrand(id);
+      const rows = items.map((c) => {
+        const open = b.kind === "secret"
+          ? `data-open-zone="${id}"`
+          : `data-use="${c.id}"`;
+        return `<button class="zone-card" type="button" ${open}>
+          ${ticketSvg(b.color, b.glyph, b.ink)}
+          <div class="zone-meta">
+            <b>${c.name}</b>
+            <span>${c.sub}</span>
+          </div>
+          <div class="zone-split"></div>
+          <div class="zone-price">¥${money(c.value, 2)}</div>
+        </button>`;
+      }).join("");
+      return `<div class="brand-block">
+        <div class="brand-h">
+          <span class="mark" style="background:${b.color};color:${b.ink}">${b.glyph}</span>
+          ${b.name}
+        </div>
+        ${rows}
+      </div>`;
+    }).join("");
+  }
+
+  document.getElementById("rights-packs").innerHTML = state.claimed
+    ? `<div class="pack-card">
+        <div class="left">
+          <b>万佳乐权益大礼包</b>
+          <span>京东专区100元、京东专区50元、饿了么116元券包、高德打车50元组合券包、美团外卖神券30元</span>
+        </div>
+        <span class="tag-got">已领取</span>
+      </div>`
+    : `<p class="empty">暂无礼包</p>`;
+}
+
+function renderZone() {
+  const z = brands[state.zoneId];
+  document.getElementById("zone-title").textContent = z.name + "列表";
+  const items = ofBrand(state.zoneId);
+  const tabs = [
+    ["miss", "未获取", 0],
+    ["getting", "获取中", 0],
+    ["got", "已获取", items.length],
+  ];
+  document.getElementById("zone-tabs").innerHTML = tabs.map(([id, label, n]) => {
+    const text = id === "got" ? `${label}(${n})` : label;
+    return `<button type="button" data-ztab="${id}" class="${state.zoneTab === id ? "on" : ""}">${text}</button>`;
+  }).join("");
+
+  document.getElementById("batch-btn").innerHTML = state.batch
+    ? "取消"
+    : `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+        <rect x="1" y="2" width="9" height="11" rx="1.5" stroke="currentColor"/>
+        <path d="M4 1h8v10" stroke="currentColor"/>
+      </svg>批量操作`;
+  document.getElementById("only-uncopied").checked = state.onlyUncopied;
+  document.getElementById("copy-all").textContent = state.batch ? "复制已选卡密" : "一键复制全部卡密";
+
+  const list = document.getElementById("zone-list");
+  if (state.zoneTab !== "got") {
+    list.innerHTML = `<p class="empty">${state.zoneTab === "miss" ? "暂无未获取卡券" : "暂无获取中卡券"}</p>`;
+    return;
+  }
+  let shown = items;
+  if (state.onlyUncopied) shown = shown.filter((c) => !c.copied);
+  if (shown.length === 0) {
+    list.innerHTML = `<p class="empty">暂无未复制卡密</p>`;
+    return;
+  }
+  list.innerHTML = shown.map((c) => `
+    <div class="coupon ${state.batch ? "is-batch" : ""}" data-id="${c.id}">
+      <input class="chk" type="checkbox" ${state.selected[c.id] ? "checked" : ""} data-sel="${c.id}" />
+      <div class="c-top">
+        <div>
+          <b>${c.name}</b>
+          <div class="c-exp">有效期至: ${c.expire}</div>
+        </div>
+        <div class="c-price">¥${money(c.value, 1)}</div>
+      </div>
+      <hr class="c-dash" />
+      <div class="c-bot">
+        <span class="mini-mark" style="background:${z.color};color:${z.ink}">${z.glyph}</span>
+        ${z.name}
+        <button class="got-btn ${c.copied ? "copied" : ""}" type="button" data-copy="${c.id}">${c.copied ? "已复制卡密" : "已获取卡密"}</button>
+      </div>
+    </div>
+  `).join("");
+}
+
+function secretText(list) {
+  return list.map((c) => `${c.name}\n卡号：${c.no}\n卡密：${c.secret}`).join("\n\n");
+}
+
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    const ok = document.execCommand("copy");
+    ta.remove();
+    return ok;
+  }
+}
+
+async function copyCoupons(list) {
+  if (!list.length) {
+    toast("请先选择卡券");
+    return;
+  }
+  await copyText(secretText(list));
+  list.forEach((c) => { c.copied = true; });
+  save();
+  toast(list.length === 1 ? "已复制卡密" : `已复制 ${list.length} 张卡密`);
+  renderZone();
+}
+
+document.getElementById("claim-btn").addEventListener("click", () => {
+  if (state.claimed) {
+    show("rights");
+    return;
+  }
+  const modal = document.getElementById("modal");
+  modal.classList.add("on");
+  setTimeout(() => {
+    modal.classList.remove("on");
+    state.claimed = true;
+    save();
+    show("rights");
+  }, 900);
+});
+
+document.getElementById("back-rights").addEventListener("click", () => show("claim"));
+document.getElementById("back-zone").addEventListener("click", () => show("rights"));
+document.getElementById("reset").addEventListener("click", () => {
+  localStorage.removeItem(KEY);
+  state = { claimed: false, page: "claim", rightsTab: "cards", filter: "unused", zoneId: "jd", zoneTab: "got", batch: false, selected: {}, onlyUncopied: false, coupons: freshCoupons() };
+  show("claim");
+});
+
+document.getElementById("page-rights").addEventListener("click", (e) => {
+  const tab = e.target.closest("[data-rtab]");
+  if (tab) {
+    state.rightsTab = tab.dataset.rtab;
+    renderRights();
+    return;
+  }
+  const filter = e.target.closest("[data-filter]");
+  if (filter) {
+    state.filter = filter.dataset.filter;
+    renderRights();
+    return;
+  }
+  const zone = e.target.closest("[data-open-zone]");
+  if (zone) {
+    state.zoneId = zone.dataset.openZone;
+    state.zoneTab = "got";
+    state.batch = false;
+    state.selected = {};
+    state.onlyUncopied = false;
+    show("zone");
+    return;
+  }
+  const use = e.target.closest("[data-use]");
+  if (use) {
+    const item = state.coupons.find((c) => c.id === use.dataset.use);
+    toast("请打开" + brands[item.brand].name + "使用");
+  }
+});
+
+document.getElementById("zone-tabs").addEventListener("click", (e) => {
+  const tab = e.target.closest("[data-ztab]");
+  if (!tab) return;
+  state.zoneTab = tab.dataset.ztab;
+  renderZone();
+});
+
+document.getElementById("batch-btn").addEventListener("click", () => {
+  state.batch = !state.batch;
+  state.selected = {};
+  renderZone();
+});
+
+document.getElementById("only-uncopied").addEventListener("change", (e) => {
+  state.onlyUncopied = e.target.checked;
+  renderZone();
+});
+
+document.getElementById("zone-list").addEventListener("click", (e) => {
+  const sel = e.target.closest("[data-sel]");
+  if (sel) {
+    state.selected[sel.dataset.sel] = sel.checked;
+    return;
+  }
+  const copy = e.target.closest("[data-copy]");
+  if (copy) {
+    const item = state.coupons.find((c) => c.id === copy.dataset.copy);
+    copyCoupons([item]);
+  }
+});
+
+document.getElementById("copy-all").addEventListener("click", () => {
+  const items = ofBrand(state.zoneId);
+  if (state.batch) {
+    copyCoupons(items.filter((c) => state.selected[c.id]));
+  } else {
+    copyCoupons(items);
+  }
+});
+
+show(state.claimed ? "rights" : "claim");
+</script>
+</body>
+</html>
