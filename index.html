@@ -238,7 +238,7 @@
   <div class="toolbar">
     <h1>礼包领取演示</h1>
     <div>
-      <span>点领取 → 列表 → 京东专区</span>
+      <span>点领取 → 列表 → 京东权益</span>
       ·
       <button type="button" id="reset">重置</button>
     </div>
@@ -296,7 +296,7 @@
         </div>
         <div class="wx-nav">
           <button class="back" id="back-zone" type="button">‹</button>
-          <div class="nt" id="zone-title">京东专区列表</div>
+          <div class="nt" id="zone-title">京东权益列表</div>
           <div class="capsule">
             <i>☆</i><span class="div"></span><i>···</i><span class="div"></span><i>○</i>
           </div>
@@ -330,11 +330,11 @@
   </div>
 
 <script>
-const KEY = "gift-pack-demo-v3";
+const KEY = "gift-pack-demo-v4";
 const BRAND_ORDER = ["jd", "eleme", "amap", "meituan"];
 
 const brands = {
-  jd: { id: "jd", name: "京东专区", short: "京东", color: "#e1251b", glyph: "京", kind: "secret", ink: "#fff" },
+  jd: { id: "jd", name: "京东权益", short: "京东", color: "#e1251b", glyph: "京", kind: "secret", ink: "#fff" },
   eleme: { id: "eleme", name: "饿了么", short: "饿了么", color: "#1a8cff", glyph: "饿", kind: "perk", ink: "#fff" },
   amap: { id: "amap", name: "高德", short: "高德", color: "#00b578", glyph: "高", kind: "perk", ink: "#fff" },
   meituan: { id: "meituan", name: "美团", short: "美团", color: "#ffd100", glyph: "美", kind: "perk", ink: "#222" },
@@ -342,8 +342,8 @@ const brands = {
 
 function freshCoupons() {
   return [
-    { id: "jd-100", brand: "jd", name: "京东专区100元", sub: "购物卡券权益", value: 100, expire: "2026-12-10 00:00:00", no: "JD100-8392-6610", secret: "K8M2-QP17", copied: false },
-    { id: "jd-50", brand: "jd", name: "京东专区50元", sub: "购物卡券权益", value: 50, expire: "2026-12-10 00:00:00", no: "JD050-4412-9081", secret: "N3T9-LE05", copied: false },
+    { id: "jd-100", brand: "jd", name: "京东权益100元", sub: "购物卡券权益", value: 100, expire: "2026-12-10 00:00:00", no: "JD100-8392-6610", secret: "K8M2-QP17", copied: false },
+    { id: "jd-50", brand: "jd", name: "京东权益50元", sub: "购物卡券权益", value: 50, expire: "2026-12-10 00:00:00", no: "JD050-4412-9081", secret: "N3T9-LE05", copied: false },
     { id: "eleme-116", brand: "eleme", name: "饿了么116元券包", sub: "满减组合券", value: 116, expire: "2026-12-10 00:00:00", copied: false },
     { id: "amap-50", brand: "amap", name: "高德打车50元组合券包", sub: "新老用户打车权益", value: 50, expire: "2026-12-10 00:00:00", copied: false },
     { id: "mt-30", brand: "meituan", name: "美团外卖神券30元", sub: "外卖红包权益", value: 30, expire: "2026-12-10 00:00:00", copied: false },
@@ -484,7 +484,7 @@ function renderRights() {
     ? `<div class="pack-card">
         <div class="left">
           <b>万佳乐权益大礼包</b>
-          <span>京东专区100元、京东专区50元、饿了么116元券包、高德打车50元组合券包、美团外卖神券30元</span>
+          <span>京东权益100元、京东权益50元、饿了么116元券包、高德打车50元组合券包、美团外卖神券30元</span>
         </div>
         <span class="tag-got">已领取</span>
       </div>`
